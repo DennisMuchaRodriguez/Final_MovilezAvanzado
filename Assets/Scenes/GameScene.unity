@@ -2360,6 +2360,79 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1329609898}
   m_CullTransparentMesh: 1
+--- !u!1 &1331793654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1331793656}
+  - component: {fileID: 1331793655}
+  m_Layer: 0
+  m_Name: PowerUpManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1331793655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331793654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdaf98eba4f07c4aaaa827aab3f5666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  powerUpConfigs:
+  - type: 0
+    prefab: {fileID: 6440267929508526864, guid: 8174848029eaff84e8882595caa2541d, type: 3}
+    spawnWeight: 5
+    minRespawnTime: 2
+    maxRespawnTime: 4
+  - type: 1
+    prefab: {fileID: 7911608514642839773, guid: 662a31defa3f9f54092ef6a65340bcde, type: 3}
+    spawnWeight: 5
+    minRespawnTime: 2
+    maxRespawnTime: 4
+  - type: 3
+    prefab: {fileID: 7708434185369725636, guid: d87f238e0c71b6e42ba0e6258b0c882d, type: 3}
+    spawnWeight: 5
+    minRespawnTime: 2
+    maxRespawnTime: 4
+  - type: 2
+    prefab: {fileID: 8016504824484437338, guid: 658611bd97ea3a0449ce2eb25cd3f9fa, type: 3}
+    spawnWeight: 6
+    minRespawnTime: 2
+    maxRespawnTime: 4
+  spawnAreaMin: {x: -8, y: -4}
+  spawnAreaMax: {x: 8, y: 4}
+  spawnCheckLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  spawnCheckRadius: 1
+  maxActivePowerUps: 3
+  initialSpawnDelay: 5
+--- !u!4 &1331793656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1331793654}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.8524516, y: 3.234426, z: -10.017533}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1440132241
 GameObject:
   m_ObjectHideFlags: 0
@@ -3952,3 +4025,4 @@ SceneRoots:
   - {fileID: 1023913085}
   - {fileID: 221164831}
   - {fileID: 840787887}
+  - {fileID: 1331793656}

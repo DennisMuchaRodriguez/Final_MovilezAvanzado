@@ -11,13 +11,17 @@ public class MovementController : NetworkBehaviour
     [SerializeField] private float moveSpeed = 6f;
 
     [Header("Configuración de Dash")]
-    [SerializeField] private float dashSpeed = 18f;
+    [SerializeField] public float dashSpeed = 18f;
     [SerializeField] private float dashDuration = 0.15f;
+    public float dashSpeedMultiplier = 1f;
 
     [Header("Efectos Visuales")]
     [SerializeField] private TrailRenderer trailRenderer;
     [SerializeField] private bool enableTrail = true;
-
+    [Header("Dash Settings")]
+    public float dashForce = 10f; // Hacerlo público
+    public Color trailColor = Color.white; // Hacerlo público
+    public GameObject trailObject; 
     private Rigidbody2D _rb;
     private PlayerInputHandler _input;
 
@@ -31,6 +35,9 @@ public class MovementController : NetworkBehaviour
 
     public bool IsDashing => _isDashing;
     public bool IsBeingPushed => _isBeingPushed;
+    [Header("Shield Immunity")]
+    private bool isShielded = false;
+    private float shieldTimer = 0f;
 
     private void Awake()
     {
@@ -42,12 +49,31 @@ public class MovementController : NetworkBehaviour
     }
     private void Update()
     {
+        if (isShielded)
+        {
+            shieldTimer -= Time.deltaTime;
+            if (shieldTimer <= 0f)
+            {
+                isShielded = false;
+                Debug.Log("Escudo DESACTIVADO");
+            }
+        }
         if (_isDashing && trailRenderer != null && !trailRenderer.emitting)
         {
             Debug.LogWarning("Trail debería estar activo pero no lo está!");
             EnableTrail();
         }
     }
+    public void ActivateShield(float duration)
+    {
+        if (!isShielded)
+        {
+            isShielded = true;
+            shieldTimer = duration;
+            Debug.Log($"Escudo ACTIVADO - Inmune por {duration}s");
+        }
+    }
+
     private void SetupTrailRenderer()
     {
         // Buscar TrailRenderer si no está asignado
@@ -143,13 +169,19 @@ public class MovementController : NetworkBehaviour
 
     public void GetPushed(Vector2 direction, float force, float duration)
     {
+        if (isShielded)
+        {
+            Debug.Log($"¡ESCUDO BLOQUEÓ empujón! Fuerza: {force}");
+            return; // No empujar si tiene escudo
+        }
+
         if (_isBeingPushed) return;
 
         if (_isDashing)
         {
             StopAllCoroutines();
             _isDashing = false;
-            DisableTrail(); // Asegurar que el trail se desactive al ser empujado
+            DisableTrail();
         }
 
         _pushDirection = direction;
@@ -160,14 +192,41 @@ public class MovementController : NetworkBehaviour
     private IEnumerator DashCoroutine()
     {
         _isDashing = true;
-        EnableTrail(); // Activar trail al empezar dash
+        EnableTrail();
 
-        yield return new WaitForSeconds(dashDuration);
+        // Usar velocidad modificada
+        float currentDashSpeed = dashSpeed * dashSpeedMultiplier;
+
+        float timer = 0f;
+        while (timer < dashDuration)
+        {
+            _rb.linearVelocity = _dashDirection * currentDashSpeed;
+            timer += Time.deltaTime;
+            yield return null;
+        }
 
         _isDashing = false;
-        DisableTrail(); // Desactivar trail al terminar dash
+        DisableTrail();
+    }
+    public void SetDashSpeedMultiplier(float multiplier, float duration)
+    {
+        StartCoroutine(ApplyDashSpeedMultiplier(multiplier, duration));
     }
 
+    private IEnumerator ApplyDashSpeedMultiplier(float multiplier, float duration)
+    {
+        float originalSpeed = dashSpeed;
+        dashSpeed *= multiplier;
+        dashSpeedMultiplier = multiplier;
+
+        Debug.Log($"Dash speed aumentado a: {dashSpeed} (x{multiplier})");
+
+        yield return new WaitForSeconds(duration);
+
+        dashSpeed = originalSpeed;
+        dashSpeedMultiplier = 1f;
+        Debug.Log($"Dash speed restaurado a: {dashSpeed}");
+    }
     private IEnumerator PushedCoroutine(float duration)
     {
         _isBeingPushed = true;

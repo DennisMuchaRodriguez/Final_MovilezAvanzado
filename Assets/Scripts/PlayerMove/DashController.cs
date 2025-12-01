@@ -5,13 +5,15 @@ using Unity.Netcode;
 public class DashController : NetworkBehaviour
 {
     [SerializeField] private float dashCooldown = 1.0f;
-    [SerializeField] private float dashPushForce = 10f;
+    [SerializeField] public float dashPushForce = 10f;
     [SerializeField] private float pushDuration = 0.2f;
 
     [Header("Efectos de Partículas")]
     [SerializeField] private GameObject collisionParticlePrefab;
     [SerializeField] private float particleDestroyDelay = 1f;
-
+    [Header("Dash Stats")]
+   
+    public float dashSpeedMultiplier = 1f; // Para Mega Dash
     private MovementController _movement;
     private PlayerInputHandler _input;
     private bool _canDash = true;
@@ -124,5 +126,24 @@ public class DashController : NetworkBehaviour
 
    
         Destroy(particles, particleDestroyDelay);
+    }
+    public void SetDashForceMultiplier(float multiplier, float duration)
+    {
+        StartCoroutine(ApplyDashForceMultiplier(multiplier, duration));
+    }
+
+    private IEnumerator ApplyDashForceMultiplier(float multiplier, float duration)
+    {
+        float originalForce = dashPushForce;
+        dashPushForce *= multiplier;
+        dashSpeedMultiplier = multiplier;
+
+        Debug.Log($"Dash force aumentado a: {dashPushForce} (x{multiplier})");
+
+        yield return new WaitForSeconds(duration);
+
+        dashPushForce = originalForce;
+        dashSpeedMultiplier = 1f;
+        Debug.Log($"Dash force restaurado a: {dashPushForce}");
     }
 }
